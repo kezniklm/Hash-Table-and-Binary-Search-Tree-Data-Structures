@@ -79,6 +79,10 @@ ht_item_t *ht_search(ht_table_t *table, char *key)
  */
 void ht_insert(ht_table_t *table, char *key, float value) 
 {
+	if(table == NULL || key == NULL)
+	{
+        return;
+    }
 	ht_item_t *temp_element = ht_search(table, key);
 	if(temp_element == NULL)
 	{
@@ -107,12 +111,17 @@ void ht_insert(ht_table_t *table, char *key, float value)
  */
 float *ht_get(ht_table_t *table, char *key) 
 {
-  ht_item_t *temp_element = ht_search(table, key);
-  if (temp_element != NULL) 
-  { 
-    return (&(temp_element->value)); 
-  }
-  return NULL;
+	if(table == NULL || key == NULL)
+	{ 
+        return NULL;
+    }
+
+  	ht_item_t *temp_element = ht_search(table, key);
+  	if (temp_element != NULL) 
+  	{ 
+    	return (&(temp_element->value)); 
+  	}
+ 	return NULL;
 }
 
 /*

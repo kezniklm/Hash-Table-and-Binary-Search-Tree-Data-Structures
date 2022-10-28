@@ -19,7 +19,10 @@
  */
 void bst_init(bst_node_t **tree) 
 {
-	*tree = NULL;
+	if (tree != NULL) 
+	{
+        (*tree) = NULL;
+	}
 }
 
 /*
@@ -44,7 +47,7 @@ bool bst_search(bst_node_t *tree, char key, int *value)
     	return true;
   	}
 
-	if (tree->key < key) 
+	if (tree->key < key) //Hľadanie v rámci stromu doprava
 	{
     	if ((tree->right) == NULL) 
 		{
@@ -53,7 +56,7 @@ bool bst_search(bst_node_t *tree, char key, int *value)
     	bst_search(tree->right, key, value);
   	}
 
-	if (tree->key > key) 
+	if (tree->key > key) //Hľadanie v rámci stromu doľava
 	{
     	if ((tree->left) == NULL) 
 		{
@@ -82,10 +85,14 @@ void bst_insert(bst_node_t **tree, char key, int value)
 	if ((*tree) == NULL) 
 	{
     	(*tree) = (bst_node_t *) malloc(sizeof(bst_node_t));
-    	(*tree)->key = key;
-    	(*tree)->value = value;
+		if ((*tree) == NULL)  //Ošetrenie v prípade zlyhania alokácie
+		{
+    		return;
+  		}
 		(*tree)->right = NULL; 	
     	(*tree)->left = NULL;
+    	(*tree)->key = key;
+    	(*tree)->value = value;
     	return;
   	}
 
@@ -221,7 +228,7 @@ void bst_dispose(bst_node_t **tree)
     	bst_dispose((&(*tree)->right));
     	free((*tree));
     	(*tree) = NULL;
-  }
+  	}
   return;
 }
 
@@ -239,7 +246,7 @@ void bst_preorder(bst_node_t *tree)
     	bst_print_node(tree);
     	bst_preorder(tree->left);
     	bst_preorder(tree->right);
-  }
+  	}
 }
 
 /*
@@ -256,7 +263,7 @@ void bst_inorder(bst_node_t *tree)
    		bst_inorder(tree->left);
     	bst_print_node(tree);
     	bst_inorder(tree->right);
-  }
+  	}
 }
 /*
  * Postorder prechod stromom.
