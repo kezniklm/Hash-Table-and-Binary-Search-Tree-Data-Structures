@@ -93,9 +93,8 @@ void ht_insert(ht_table_t *table, char *key, float value)
 		}
 		new_element->value = value;
 		new_element->key = key;
-		int i = get_hash(key);
-		new_element->next = (*table)[i];
-		(*table)[i] = new_element;
+		new_element->next = (*table)[get_hash(key)];
+		(*table)[get_hash(key)] = new_element;
 		return;
 	}
 	else temp_element->value = value;
@@ -142,25 +141,16 @@ void ht_delete(ht_table_t *table, char *key)
 	int hash = get_hash(key);
 	ht_item_t *element = (*table)[hash];
     ht_item_t *previous_element;
-	int first = 0;
-    
-    while (element)
+	   
+    while (element != NULL)
 	{
         if (strcmp(element->key,key) == 0)
 		{
-			if(first == 0)
-			{
-				(*table)[hash] = NULL; //Prvok bol jediný na indexe
-			}
-			else 
-			{
-				previous_element->next = element->next; //Na indexe je viacej prvkov
-			}
-            
+			previous_element->next = element->next; //Na indexe je viacej prvkov
             free(element);
             return;
         }
-		first++;
+		
         previous_element = element;
         element = element->next;
     }
@@ -178,18 +168,15 @@ void ht_delete_all(ht_table_t *table)
 	{ 
         return;
     }
-	ht_item_t *temp_element;
-  	ht_item_t *previous_element;
+  	ht_item_t *delete_element;
   	for(int i = 0; i < HT_SIZE; i++) 
 	{ 
-    	temp_element = (*table)[i];
-
 		//postupné uvoľňovanie prvkov
-    	while (temp_element)
+    	while ((*table)[i])
 		{ 
-      		previous_element = temp_element;
-      		temp_element = temp_element->next;
-      		free(previous_element);
+      		delete_element = (*table)[i];
+            (*table)[i] = delete_element->next;
+            free(delete_element);
     	}
     (*table)[i] = NULL; //Uvedenie tabuľky do stavu po inicializácii
   }
