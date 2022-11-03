@@ -49,19 +49,11 @@ bool bst_search(bst_node_t *tree, char key, int *value)
 
 	if (tree->key < key) //Hľadanie v rámci stromu doprava
 	{
-    	if ((tree->right) == NULL) 
-		{
-			return false;
-    	}
     	bst_search(tree->right, key, value);
   	}
 
 	if (tree->key > key) //Hľadanie v rámci stromu doľava
 	{
-    	if ((tree->left) == NULL) 
-		{
-      		return false;
-    	}
     	bst_search(tree->left, key, value);
   	}
 
@@ -91,8 +83,20 @@ void bst_insert(bst_node_t **tree, char key, int value)
   		}
 		(*tree)->right = NULL; 	
     	(*tree)->left = NULL;
+		(*tree)->value = value;
     	(*tree)->key = key;
+    	return;
+  	}
+
+	if (key == (*tree)->key) 
+	{
     	(*tree)->value = value;
+    	return;
+  	}
+
+	if (key < (*tree)->key) 
+	{
+    	bst_insert((&(*tree)->left), key, value);
     	return;
   	}
 
@@ -100,18 +104,7 @@ void bst_insert(bst_node_t **tree, char key, int value)
 	{
     	bst_insert((&(*tree)->right), key, value);
     	return;
-  	}
-  	if (key < (*tree)->key) 
-	{
-    	bst_insert((&(*tree)->left), key, value);
-    	return;
-  	}
-
-  	if (key == (*tree)->key) 
-	{
-    	(*tree)->value = value;
-    	return;
-  	}
+  	} 
 }
 
 /*
@@ -129,12 +122,12 @@ void bst_insert(bst_node_t **tree, char key, int value)
  */
 void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree) 
 {
-	bst_node_t *rightmost = *tree;
-
     if ((target == NULL) || (tree  == NULL))
 	{
         return;
     } 
+
+	bst_node_t *rightmost = *tree;
 
 	if ((*tree)->right != NULL)
 	{
@@ -163,6 +156,8 @@ void bst_replace_by_rightmost(bst_node_t *target, bst_node_t **tree)
  */
 void bst_delete(bst_node_t **tree, char key) 
 {
+	bst_node_t *temp = NULL;
+
 	if ((*tree) == NULL) //Ošetrenie vstupu
 	{
 		return;
@@ -180,6 +175,12 @@ void bst_delete(bst_node_t **tree, char key)
 
   	if (key == (*tree)->key) 
 	{
+		if ((*tree)->left != NULL && (*tree)->right != NULL) //Má obidva podstromy - musíme použiť funkciu bst_replace_by_rightmost
+		{
+      		bst_replace_by_rightmost((*tree), (&(*tree)->left));
+      		return;
+    	}
+		
     	if ((*tree)->left == NULL && (*tree)->right == NULL) //Nie je žiaden podstrom
 		{
       		free(*tree);
@@ -189,25 +190,21 @@ void bst_delete(bst_node_t **tree, char key)
 
 		if ((*tree)->left != NULL && (*tree)->right == NULL) //Má ľavý podstrom
 		{ 
-      		bst_node_t *tmp = (*tree);
+      		temp = (*tree);
       		(*tree) = ((*tree)->left);
-      		free(tmp);
+      		free(temp);
       		return;
     	}
 
 		if ((*tree)->left == NULL && (*tree)->right != NULL) //Má pravý podstrom
 		{ 
-      		bst_node_t *tmp = (*tree);
+      		temp = (*tree);
       		(*tree) = ((*tree)->right);
-      		free(tmp);
+      		free(temp);
       		return;
     	}
 
-		if ((*tree)->left != NULL && (*tree)->right != NULL) //Má obidva podstromy - musíme použiť funkciu bst_replace_by_rightmost
-		{
-      		bst_replace_by_rightmost((*tree), (&(*tree)->left));
-      		return;
-    	}
+		
 	}
 }
 
